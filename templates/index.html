@@ -1,0 +1,28 @@
+<!doctype html>
+
+<!-- 
+{% if name %}
+  <h1>Hello {{ name }}!</h1>
+{% else %}
+  <h1>Hello, World!</h1>
+{% endif %}
+-->
+
+<title>Search our catalog</title>
+<form>
+    keyword search:<br>
+    <input type="text" name="search">
+    <br>
+    {% if query %}
+        <p> Search for: {{ query }} </p>
+    {% endif %}
+    {% if results %}
+        {% if results == -1%}
+            <p>Sorry, not results :(</p>
+        {% else %}
+            {% for result in results %}
+                <li> {{ result }} </li>
+            {% endfor %}
+        {% endif %}
+    {% endif %}
+</form>
