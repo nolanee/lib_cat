@@ -148,8 +148,9 @@ class Library:
         ids = set(id_list)
         
         for book in self.all_books:
-            if s in book.tags:
-                return_books.append(book)
+            if s in book.tags or s in book.author:
+                if book not in return_books:
+                    return_books.append(book)
 
             possible_ids = book.possible_google_ids
             if possible_ids == -1 or possible_ids == []:
