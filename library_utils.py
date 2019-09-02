@@ -1,4 +1,5 @@
 class Book:
+    # need to add editor, -> perhaps better to do as dictionary or let initialize as a dictionary
     def __init__(self, title, author, shelf_id, tags=[], possible_google_ids=[]):
         self.title = title
         self.author = author
