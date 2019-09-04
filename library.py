@@ -142,8 +142,10 @@ class Library:
                 if book not in return_books:
                     return_books.append(book)
 
-        if return_books != []:
-            return return_books
+        # try adding google results to make searches like "Herodotus"
+        # turn out better
+        #if return_books != []:
+            #return return_books
 
         ids = set(id_list)
         
