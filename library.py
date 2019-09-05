@@ -107,6 +107,7 @@ class Library:
     def get_book(self, isbn_num):
         return self.books_by_isbn[isbn_num]
 
+    # add image getting feature so can show results with images?
     def search(self, s):
         return_books = []
 
@@ -150,7 +151,8 @@ class Library:
         ids = set(id_list)
         
         for book in self.all_books:
-            if s in book.tags or s in book.author:
+            # FIXME: make tags lowercase when initialize, get rid of first part
+            if s in book.tags or s.lower in book.tags or s in book.author:
                 if book not in return_books:
                     return_books.append(book)
 
@@ -255,7 +257,9 @@ if __name__ == "__main__":
     for book in books:
         k += 1
         s = str(book)
-        print(k, s)
+        print(k, s)p {
+  color: red;
+}
         d = lib.search(s)
         if d != -1 and d != -2 and d != []:
             i += 1

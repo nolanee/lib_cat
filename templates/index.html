@@ -1,28 +1,45 @@
 <!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <link href="static/styles/style.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Montserrat|Open+Sans&display=swap&subset=latin-ext" rel="stylesheet">
+        <title>Search our catalog</title>
+    </head>
+<body>
+    <h1>The U. of M. Dept. of Classics presents: <i>Quaestiones Codicum</i></h1>
+    
+    <h2>Please enter keywords (e.g. authors, titles, tags) to search our catalog:</h2>
+    <h3>Keyword search:</h3>
+    <form>
+        <input type="text" name="search">
+    </form>
 
-<!-- 
-{% if name %}
-  <h1>Hello {{ name }}!</h1>
-{% else %}
-  <h1>Hello, World!</h1>
-{% endif %}
--->
-
-<title>Search our catalog</title>
-<form>
-    keyword search:<br>
-    <input type="text" name="search">
-    <br>
     {% if query %}
-        <p> Search for: {{ query }} </p>
+        <h3> Results for: {{ query }} </h3>
     {% endif %}
+
     {% if results %}
         {% if results == -1%}
-            <p>Sorry, not results :(</p>
+        <p>Sorry, not results :(</p>
         {% else %}
+            <h4>Search returned {{ num_results }} results</h4>
+            <ol>
             {% for result in results %}
                 <li> {{ result }} </li>
             {% endfor %}
+            </ol>
         {% endif %}
     {% endif %}
-</form>
+    
+</body>
+
+<br>
+<a href="http://www.librarything.com/catalog/UMClassics">Checkout our main library catalog</a>
+<br>
+<a href="https://upload.wikimedia.org/wikipedia/commons/9/90/GiorcesBardo42.jpg">Source of image below</a>
+<br>
+
+<image src=static/images/GiorcesBardo42.jpg alt="Mosaic of Vergil with muses">
+
+</html>

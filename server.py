@@ -20,8 +20,13 @@ def search():
             results.append(str(book))
         if results == []:
             results = -1
+    
+    num_results = 0
+    if type(results) != int:
+        num_results = len(results)
+    
 
-    return render_template('index.html', query=s, results=results)
+    return render_template('index.html', query=s, results=results, num_results=num_results)
     
 if __name__ == '__main__':
     app.run(debug=1)
