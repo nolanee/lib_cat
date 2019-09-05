@@ -13,8 +13,12 @@ h3, h4 {
     font-family: 'Open Sans', sans-serif;
 }
 
-h1, h3, form {
+h1, form {
     text-align: center;
+}
+
+h2, h3 {
+    text-align: left;
 }
 
 form {
@@ -27,4 +31,10 @@ body {
     background-color: white;
     padding: 0 2.5% 2.5% 2.5%;
     border: 5px solid black;
+}
+
+img {
+    display: block;
+    margin: auto auto;
+    width: 50%
 }
