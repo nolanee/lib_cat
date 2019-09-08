@@ -14,6 +14,10 @@ class Book:
     def __eq__(self, other):
         ## update later with lib id numbers instead of shelf_id
         return (self.shelf_id == other.shelf_id) 
+    
+    # for now only works with strings
+    def __add__ (self, other):
+        return str(self) + other
 
 def book_list_to_dict_list(book_list, is_dict=False):
     if is_dict == False:

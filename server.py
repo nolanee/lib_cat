@@ -4,7 +4,8 @@ app = Flask(__name__)
 from library import Library
 
 @app.route('/')
-#@app.route('/?search=<search>')
+# @app.route('/?search=<search>')
+# will want to add to sanitize searches (length of them etc.)
 def search():
     # url(?key=value)
     s = request.args.get('search', '')
@@ -27,6 +28,7 @@ def search():
     
 
     return render_template('index.html', query=s, results=results, num_results=num_results)
-    
+
+# still have issues with effectiveness of search re libthing
 if __name__ == '__main__':
     app.run(debug=1)

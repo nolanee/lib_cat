@@ -5,8 +5,8 @@ class Library:
     def init_from_file(self, filename):
         file = open(filename, 'r')
         data = json.load(file)
+        # FIXME: make just two different functions at some point?
         self.books_by_isbn = dict_list_to_book_list(data['books'], True)
-        self.books_without_isbns = dict_list_to_book_list(data['books_without_isbns'])
         self.all_books = dict_list_to_book_list(data['all_books'])
         self.isbns = set(data['isbns'])
 
@@ -15,7 +15,6 @@ class Library:
         data = {
             # also works for dicts
             'books' : book_list_to_dict_list(self.books_by_isbn, True),
-            'books_without_isbns' : book_list_to_dict_list(self.books_without_isbn),
             'all_books' : book_list_to_dict_list(self.all_books),
             'isbns' : list(self.isbns)
         }
@@ -63,13 +62,10 @@ class Library:
                     isbn = isbns['2']
 
             book = Book(title,author, shelf_id, tags)
-            if isbn == 0:
-                self.books_without_isbn.append(book)
-            else:
+            if isbn != 0:
                 isbn_list.append(isbn)
                 self.books_by_isbn[isbn] = book
             
-            #keep this?
             self.all_books.append(book)
 
         self.isbns = set(isbn_list)
@@ -78,7 +74,6 @@ class Library:
     def __init__ (self, filename='librarything_UMClassics.json', init_from_record=False):
         # do with list books now, can do with dict or set later
         self.books_by_isbn = {}
-        self.books_without_isbn = []
         self.all_books = []
         self.isbns = set()
 
@@ -95,14 +90,11 @@ class Library:
 
     def __str__(self):
         return_str = ''
-        for isbn in self.isbns:
-            return_str += str(self.books_by_isbn[isbn]) + '\n'
             
-        for book in self.books_without_isbn:
-            return_str += str(book)
+        for book in self.all_books:
+            return_str += book + '\n'
 
-        return_str += '\n' + str(len(self.books_without_isbn)) + ' works do not have isbns.\n'
-        return  return_str
+        return return_str
 
     def get_book(self, isbn_num):
         return self.books_by_isbn[isbn_num]
@@ -124,10 +116,10 @@ class Library:
         items = data['items']
         for item in items:
             volume_info = item['volumeInfo']
-            #used below
+            # used below
             id_list.append(item['id'])
 
-            #can't find if no isbn 13 available, may want to call other api
+            # can't find if no isbn 13 available, may want to call other api
             if 'industryIdentifiers' not in volume_info.keys():
                 break
                 
@@ -143,16 +135,11 @@ class Library:
                 if book not in return_books:
                     return_books.append(book)
 
-        # try adding google results to make searches like "Herodotus"
-        # turn out better
-        #if return_books != []:
-            #return return_books
-
         ids = set(id_list)
         
         for book in self.all_books:
             # FIXME: make tags lowercase when initialize, get rid of first part
-            if s in book.tags or s.lower in book.tags or s in book.author:
+            if s in book.tags or s.lower() in book.tags or s.lower() in book.author.lower() or s.lower() in book.title.lower():
                 if book not in return_books:
                     return_books.append(book)
 
@@ -233,12 +220,16 @@ if __name__ == "__main__":
     filename = 'new_lib_info.json'
     lib = Library(filename, True)
     print(lib.count_books_with_google_id())
+    print(lib)
     #lib.print_missing()
+
+    """
     lib.add_google_ids(100)
     lib.save_to_file(filename)
     new_lib = Library(filename, True)
     print(new_lib.count_books_with_google_id())
     lib.show_books_without_google_ids()
+    """
     
     """
     books = lib.all_books
