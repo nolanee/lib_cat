@@ -1,12 +1,19 @@
 class Book:
     # need to add editor, -> perhaps better to do as dictionary or let initialize as a dictionary
-    def __init__(self, title, author, shelf_id, tags=[], possible_google_ids=[]):
+    # also add image_url (but can be empty to update during search) and libcat num
+    def __init__(self, title, author, shelf_id, tags=[], possible_google_ids=[], possible_loc_ids=[],
+      editor ='', libthing_num='', isbn='', image_url=''):
         self.title = title
         self.author = author
         self.shelf_id = shelf_id
         self.tags = tags
         self.possible_google_ids = possible_google_ids
-
+        self.possible_loc_ids = []
+        self.editor = editor
+        self.libthing_num = libthing_num
+        self.isbn = isbn
+        self.image_url = image_url
+        
     def __str__(self):
         return_title = self.title  + " " + self.author + " " + self.shelf_id
         return return_title
@@ -19,19 +26,25 @@ class Book:
     def __add__ (self, other):
         return str(self) + other
 
-def book_list_to_dict_list(book_list, is_dict=False):
-    if is_dict == False:
-        return_list = []
-        for book in book_list:
-            return_list.append({
-                'title' : book.title,
-                'author' : book.author,
-                'shelf_id' : book.shelf_id,
-                'tags' : book.tags,
-                'possible_google_ids' : book.possible_google_ids
-            })
-        return return_list
-
+def book_list_to_dict_list(book_list):
+    return_list = []
+    for book in book_list:
+        return_list.append({
+            'title' : book.title,
+            'author' : book.author,
+            'shelf_id' : book.shelf_id,
+            'tags' : book.tags,
+            'possible_google_ids' : book.possible_google_ids,
+            'possible_loc_ids' : book.possible_loc_ids,
+            'editor' : book.editor,
+            'libthing_num' : book.libthing_num,
+            'isbn' : book.isbn,
+            'image_url' : book.image_url
+        })
+    return return_list
+    
+    # code to do as dict which will want to do
+    """
     return_dict = {}
     keys = book_list.keys()
     for key in keys:
@@ -43,21 +56,29 @@ def book_list_to_dict_list(book_list, is_dict=False):
                 'possible_google_ids' : book.possible_google_ids
         }
     return return_dict
+    """
 
 def dict_list_to_book_list(dict_list, is_dict=False):
     if is_dict == False:
         return_list = []
         for book in dict_list:
-            #print(book['possible_google_ids'])
-            return_list.append(Book(book['title'], book['author'], book['shelf_id'], book['tags'], book['possible_google_ids']))
+            #need while updating, can probably remove later
+            libthing_num = ''
+            if 'libthing_num' in book.keys():
+                libthing_num = book['libthing_num']
+
+            return_list.append(Book(book['title'], book['author'],
+            book['shelf_id'], book['tags'], book['possible_google_ids'],
+            book['possible_loc_ids'], book['editor'], libthing_num, book['isbn'],
+            book['image_url']))
         return return_list
 
-    return_dict = {}
-    keys = dict_list.keys()
-    for key in keys:
-        book = dict_list[key]
-        return_dict[key] = Book(book['title'], book['author'], book['shelf_id'], book['tags'], book['possible_google_ids'])
-    return return_dict
+    # return_dict = {}
+    # keys = dict_list.keys()
+    # for key in keys:
+       # book = dict_list[key]
+       # return_dict[key] = Book(book['title'], book['author'], book['shelf_id'], book['tags'], book['possible_google_ids'])
+    # return return_dict
 
 import json
 import html
@@ -113,3 +134,31 @@ def get_searched_google_ids(s, limit=3):
 
     return found_ids
     #print(searched_isbns)
+
+def get_searched_loc_ids(s, limit=5):
+    query = 'https://www.loc.gov/books/?all=true&q=' + s + '&fo=json'
+    request = requests.get(query)
+
+    search = request.json()
+    results = search['results']
+
+    nums = []
+
+    i = 0
+    while i < limit:
+        for result in results:
+            #image_url = result['image_url']
+            nums.append(result['id'])
+            i+=1
+    
+    return nums
+
+if __name__ == '__main__':
+    from library import Library
+    filename = 'new_lib_info.json'
+    lib = Library(filename, True)
+    ##for book in lib.all_books:
+        #book.loc_id = get_searched_loc_ids(str(book.title))
+    book = lib.all_books[0]
+    book.possible_loc_ids = get_searched_loc_ids(str(book.title))
+    print(book.possible_loc_ids)

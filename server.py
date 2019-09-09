@@ -29,6 +29,6 @@ def search():
 
     return render_template('index.html', query=s, results=results, num_results=num_results)
 
-# still have issues with effectiveness of search re libthing
+# still have issues with effectiveness of search re libthing (see Herodotous search and CM in library.py)
 if __name__ == '__main__':
     app.run(debug=1)
