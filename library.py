@@ -1,4 +1,6 @@
-from library_utils import Book, get_g_json, get_libthing_json, book_list_to_dict_list, dict_list_to_book_list, get_searched_google_ids, requests
+from library_utils import Book, get_libthing_json, book_list_to_dict_list, dict_list_to_book_dict
+from search_utils import get_g_json, get_searched_google_ids, get_g_search_results
+import requests
 import json
 
 class Library:
@@ -9,8 +11,66 @@ class Library:
         # can make books by isbn while creating and think can look in books by isbn so don't need set either
         #self.books_by_isbn = dict_list_to_book_list(data['books'], True)
         # make dict of lib_cat nums
-        self.all_books = dict_list_to_book_list(data['all_books'])
+
+        # start of changing to dictionary-based set-up -> in future this will be initialize from dict dict instead of dict list
+        self.books = dict_list_to_book_dict(data['all_books'])
         #self.isbns = set(data['isbns'])
+
+        # will get rid of list later, when other code does not depend on it (make things more encapsulated?)
+        self.all_books = []
+
+        # these dicts will be backbone of search (should not have to search through list)
+        self.books_by_isbn = {}
+        self.books_by_google_id = {}
+        self.books_by_loc_id = {}
+        self.books_by_tag = {}
+
+        # can add a cleaned and lowercased title and author last name dict to search too, and use secondary authors/editors too for author
+        # will want to updated secondary author/editor to make this work better too
+        # can wait to see if way reddis works can fix that
+
+        # Cf. Aristotle as well as Herodotus
+        
+        keys = self.books.keys()
+        for key in keys:
+            book = self.books[key]
+            num = book.libthing_num
+
+            self.all_books.append(self.books[key])
+
+            isbn = book.isbn
+            if isbn and isbn != 0:
+                if isbn in self.books_by_isbn.keys():
+                    self.books_by_isbn[isbn].append(num)
+                else:
+                    self.books_by_isbn[isbn] = [num]
+
+            google_ids = book.possible_google_ids
+            # negative one for books where search returned nothing
+            if type(google_ids) != int:
+                for g_id in google_ids:
+                    if g_id in self.books_by_google_id.keys():
+                        self.books_by_google_id[g_id].append(num)
+                    else:
+                        self.books_by_google_id[g_id] = [num]
+            
+            loc_ids = book.possible_loc_ids
+            if loc_ids != 'not found':
+                for loc_id in loc_ids:
+                    if loc_id in self.books_by_loc_id.keys():
+                        self.books_by_loc_id[loc_id].append(num)
+                    else:
+                        self.books_by_loc_id[loc_id] = [num]
+            
+            tags = book.tags
+            for tag in tags:
+                # want them all to be lower case, so can check against a lowercase of query
+                tag = tag.lower()
+                if tag in self.books_by_tag.keys():
+                    self.books_by_tag[tag].append(num)
+                else:
+                    self.books_by_tag[tag] = [num]
+            
 
     def save_to_file(self, filename):
         file = open(filename, 'w')
@@ -23,6 +83,7 @@ class Library:
         json.dump(data, file)
     
     def init_from_lib_thing(self, filename):
+        self.books = {}
         catalog_id_entries = get_libthing_json(filename)
 
         keys = []
@@ -65,9 +126,11 @@ class Library:
                 else: 
                     isbn = isbns['2']
 
-            book = Book(title, author, shelf_id, tags, list(), list(), editor, key, isbn)
+            entry_date = entry['entrydate']
+
+            book = Book(title, author, shelf_id, tags, list(), list(), editor, key, isbn, entry_date)
             
-            self.all_books.append(book)
+            self.books[key] = book
 
     def __init__ (self, filename='librarything_UMClassics.json', init_from_record=False):
         # do with list books now, can do with dict or set later
@@ -98,16 +161,17 @@ class Library:
         return self.books_by_isbn[isbn_num]
 
     # add image getting feature so can show results with images?
-    # still need to improve (won't get Fehling in German with Herodotus)
+    # still need to improve (compare Hdt. and Arist. with LibThing)
     # try library of congress or google translate api?
-    # library of congress would work but might want to add LCCN numbers along with isbn to api
+    # add to search by isbn, author, shelf_id
     def search(self, s):
         return_books = []
 
+        # FIXME fit helper functions into other file, make search fit new way
+        #return_books += get_g_search_results(self)
         data = get_g_json(s)
-        # can't find if search doesn't return items (may want to call other api)
-        # could also use this as an excuse to search titles or authors?
-        if 'items' not in data.keys() or data['totalItems'] == '0':
+        # can't find if search doesn't return items 
+        if not ('items' in data.keys() and data['totalItems'] != '0'):
             return -1
 
         searched_isbns = []
@@ -162,6 +226,7 @@ class Library:
                 count += 1
         print(count)
 
+    ## add some of below to update?
     def add_google_ids(self, num_entries=10):
         count = 0
         for book in self.all_books:
@@ -220,6 +285,9 @@ class Library:
         # may want to use only dicts at some point if can make that work, then maybe go throught all
         # books to make up results up to a certain number?
         ## function to put in utils and take out requests from top starts here 
+
+        # can get Geschichte der griechischen Religion (Neubearbeitung): Zweiter Band - 
+        # Die hellenistische und römische Zeit (Handbuch der Altertumswissenschaft)?
         query = 'https://www.loc.gov/books/?all=true&q=' + s + '&fo=json'
         request = requests.get(query)
         print(request)
