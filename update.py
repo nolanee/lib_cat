@@ -21,7 +21,7 @@ def update_loc_ids(lib, filename, limit):
         book_i += 1
         if book.possible_loc_ids:
             continue
-        results = get_searched_loc_ids(book.title, 5)
+        results = get_searched_loc_ids(book.title, True)
         #when fails want to return and try again
         if results == -1:
              return False
@@ -29,7 +29,7 @@ def update_loc_ids(lib, filename, limit):
             # may want to make -1 later to fit with google search
             results = "not found"
         book.possible_loc_ids = results
-        
+        ""
         print(book.title)
         print(results)
         count += 1
@@ -102,7 +102,7 @@ def add_books_from_lt(filename, json_filename):
             print(book)
             lib.all_books.append(book)
     
-    lib.save_to_file(filename)
+    lib.save_to_file(filename) 
 
 
 def update_isbns_from_lt(filename, json_filename, write_file=''):
@@ -115,7 +115,7 @@ def update_isbns_from_lt(filename, json_filename, write_file=''):
         for book in lib.all_books:
             if lib_book == book:
                 book.isbn = lib_book.isbn
-    
+      
     lib.save_to_file(write_file)
 
 def add_entry_dates(lib, filename):
@@ -127,6 +127,30 @@ def add_entry_dates(lib, filename):
         bk1.entry_date = bk2.entry_dat
     lib.save_to_file(filename)
 
+    # will need to be updated
+    """
+    def add_google_ids(self, num_entries=10):
+        count = 0
+        for book in self.all_books:
+            if type(book.possible_google_ids) == list and len(book.possible_google_ids) > 0:
+                continue
+            # can't waste api calls going over books google can't find (-1 is returned from previous searches)
+            # fix again after update all the entries with isbns but no google ids
+            #if book.possible_google_ids == -1:
+                #continue
+            book.possible_google_ids = get_searched_google_ids(str(book))
+            # if can't get results on first try with title + author, try just title
+            if book.possible_google_ids == -1:
+                book.possible_google_ids = get_searched_google_ids(book.title)
+            if book.possible_google_ids == -1 and self.has_isbn(book):
+                book.possible_google_ids = get_searched_google_ids("+isbn:" + self.get_isbn(book))
+            count += 1
+            print(count, str(book), book.possible_google_ids)
+            if count == num_entries:
+                break
+        if count == 0:
+            print('No entries without possible google ids recorded found')
+    """
    
 # FIXME add function to verify what's in file matches library thing
 

@@ -30,9 +30,13 @@ class Book:
     def __add__ (self, other):
         return str(self) + other
 
-def book_list_to_dict_list(book_list):
+# FIXME store as dict too
+def book_dict_to_dict_list(book_dict):
+    
     return_list = []
-    for book in book_list:
+    keys = book_dict.keys()
+    for key in keys:
+        book = book_dict[key]
         return_list.append({
             'title' : book.title,
             'author' : book.author,
@@ -47,21 +51,6 @@ def book_list_to_dict_list(book_list):
             'image_url' : book.image_url
         })
     return return_list
-    
-    # code to do as dict which will want to do
-    """
-    return_dict = {}
-    keys = book_list.keys()
-    for key in keys:
-        book = book_list[key]
-        return_dict[key] = {'title' : book.title,
-                'author' : book.author,
-                'shelf_id' : book.shelf_id,
-                'tags' : book.tags,
-                'possible_google_ids' : book.possible_google_ids
-        }
-    return return_dict
-    """
 
 def dict_list_to_book_dict(dict_list):
     # FIXME will change for reading a dict and this will make it easier
@@ -89,5 +78,5 @@ if __name__ == '__main__':
     ##for book in lib.all_books:
         #book.loc_id = get_searched_loc_ids(str(book.title))
     book = lib.all_books[0]
-    book.possible_loc_ids = get_searched_loc_ids(str(book.title))
+    #book.possible_loc_ids = get_searched_loc_ids(str(book.title))
     print(book.possible_loc_ids)
