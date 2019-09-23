@@ -14,6 +14,7 @@ def do_request(query):
 
     return request.text
 
+# writes results to results.html to render
 def scrape_search(search):
     search = search.replace(' ', '+')
     url = "https://www.librarything.com/catalog/UMClassics&deepsearch=" + search
@@ -23,6 +24,8 @@ def scrape_search(search):
     url = "http://www.librarything.com" + tag['src']
     response = requests.get(url).text
     soup = BeautifulSoup(response, 'html.parser')
+    table = soup.find(id='lt_catalog_list')
+    tag = table.select(['thead']['tbody']['tr'][]
     return str(soup.find(id="lt_catalog_list"))
 
 if __name__ == "__main__":

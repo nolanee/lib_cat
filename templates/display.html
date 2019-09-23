@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <link href="static/styles/style.css" rel="stylesheet">
+        <link rel="shortcut icon" href="static/images/clio2.png">
+        <link href="https://fonts.googleapis.com/css?family=Montserrat|Open+Sans&display=swap&subset=latin-ext" rel="stylesheet">
+        <title>Search our catalog</title>
+    </head>
+<body>
+    <h1>The U. of M. Dept. of Classics presents: <i>Quaestiones Codicum</i></h1>
+    
+    <h2>Please enter keywords to search our catalog:</h2>
+    <form>
+        <input type="text" name="search">
+    </form>
+
+    {% if query %}
+        <h3>Results for: {{ query }}</h3>
+    {% endif %}
+
+    {% if results %}
+        {% include 'results.html' %}
+    {% endif %}
+    
+
+    <br>
+    <a href="http://www.librarything.com/catalog/UMClassics">Checkout our main library catalog</a>
+    <br>
+    <a href="https://upload.wikimedia.org/wikipedia/commons/9/90/GiorcesBardo42.jpg">Source of image below</a>
+    <br>
+
+    <img src=static/images/GiorcesBardo42.jpg alt="Mosaic of Vergil with muses">
+</body>
+
+</html>

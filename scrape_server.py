@@ -21,7 +21,7 @@ def search():
 
 
         num_results = 1
-        page = 'results.html'
+        page = 'display.html'
 
     return render_template(page, query=s, results=results, num_results=num_results)
 
