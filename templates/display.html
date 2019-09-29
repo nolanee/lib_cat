@@ -1,28 +1,52 @@
 <!doctype html>
+
 <html>
-    <head>
-        <meta charset="utf-8">
-        <link href="static/styles/style.css" rel="stylesheet">
-        <link rel="shortcut icon" href="static/images/clio2.png">
-        <link href="https://fonts.googleapis.com/css?family=Montserrat|Open+Sans&display=swap&subset=latin-ext" rel="stylesheet">
-        <title>Search our catalog</title>
-    </head>
+
+<head>
+    <meta charset="utf-8">
+    <link href="static/styles/style.css" rel="stylesheet">
+    <link rel="shortcut icon" href="static/images/clio2.png">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat|Open+Sans&display=swap&subset=latin-ext"
+        rel="stylesheet">
+    <title>Search our catalog</title>
+</head>
+
 <body>
     <h1>The U. of M. Dept. of Classics presents: <i>Quaestiones Codicum</i></h1>
-    
+
     <h2>Please enter keywords to search our catalog:</h2>
     <form>
         <input type="text" name="search">
     </form>
 
     {% if query %}
-        <h3>Results for: {{ query }}</h3>
+    <h3>Results for: {{ query }}</h3>
     {% endif %}
 
     {% if results %}
-        {% include 'results.html' %}
+    <table>
+        <thead>
+            <tr class='tablehead'>
+                <td>Author</td>
+                <td>Title</td>
+                <td>LC Classification</td>
+                <td>Publication</td>
+                <td>Tags</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for result in results %}
+            <tr>
+                <td>{{ result.author }}</td>
+                <td>{{ result.title }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p class="no_results">Sorry, no results :(</p>
     {% endif %}
-    
+
 
     <br>
     <a href="http://www.librarything.com/catalog/UMClassics">Checkout our main library catalog</a>
